@@ -6,13 +6,14 @@
 // Puis copier la config Web
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  databaseURL: "YOUR_DATABASE_URL",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDm3HvfygSwEwoU0AgOBmtePK10YM1AWq4",
+  authDomain: "quimaster-47e01.firebaseapp.com",
+  databaseURL: "https://quimaster-47e01.firebaseio.com",
+  projectId: "quimaster-47e01",
+  storageBucket: "quimaster-47e01.firebasestorage.app",
+  messagingSenderId: "826062192341",
+  appId: "1:826062192341:web:1200da673512e1778c6c5c",
+  measurementId: "G-R1PJ1J6LQ6"
 };
 
 // Détecte si Firebase est configuré
