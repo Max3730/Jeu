@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — QuizMaster</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js"></script>
+<script src="config.js"></script>
+<style>
+  :root {
+    --bg: #060608;
+    --surface: #0f0f16;
+    --card: #15151f;
+    --accent: #f5c518;
+    --accent2: #e84393;
+    --green: #00e676;
+    --red: #ff1744;
+    --blue: #2979ff;
+    --text: #f0f0f0;
+    --muted: #666;
+    --border: rgba(245,197,24,0.12);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .admin-badge {
+    background: rgba(232,67,147,0.15);
+    border: 1px solid rgba(232,67,147,0.3);
+    color: var(--accent2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-card .big { font-family: 'Bebas Neue', sans-serif; font-size: 48px; line-height: 1; }
+  .stat-card .lbl { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .stat-card.yellow .big { color: var(--accent); }
+  .stat-card.pink .big { color: var(--accent2); }
+  .stat-card.green .big { color: var(--green); }
+  .stat-card.blue .big { color: var(--blue); }
+
+  /* GAME CONTROLS */
+  .controls-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .controls-card h2 { font-size: 16px; font-weight: 900; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .controls-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: scale(0.97); }
+  .btn-start {
+    background: linear-gradient(135deg, var(--green), #00c853);
+    color: #000;
+    box-shadow: 0 4px 20px rgba(0,230,118,0.3);
+  }
+  .btn-reset {
+    background: rgba(255,23,68,0.15);
+    border: 1px solid rgba(255,23,68,0.3);
+    color: var(--red);
+  }
+  .btn-reset:hover { background: rgba(255,23,68,0.25); }
+  .btn-export {
+    background: rgba(41,121,255,0.15);
+    border: 1px solid rgba(41,121,255,0.3);
+    color: var(--blue);
+  }
+  .btn-export:hover { background: rgba(41,121,255,0.25); }
+  .btn-refresh {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .game-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 900;
+    margin-left: auto;
+  }
+  .game-status.waiting { background: rgba(245,197,24,0.1); color: var(--accent); }
+  .game-status.running { background: rgba(0,230,118,0.1); color: var(--green); }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .status-dot.running { animation: blink 1s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* LEADERBOARD TABLE */
+  .lb-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .lb-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .lb-header h2 { font-size: 16px; font-weight: 900; display: flex; align-items: center; gap: 8px; }
+  .search-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    outline: none;
+    width: 200px;
+  }
+  .search-box:focus { border-color: var(--accent); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  th:last-child, td:last-child { text-align: right; }
+  td {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    background: var(--surface);
+    color: var(--muted);
+  }
+  .rank-badge.r1 { background: rgba(255,215,0,0.15); color: #ffd700; }
+  .rank-badge.r2 { background: rgba(192,192,192,0.15); color: #c0c0c0; }
+  .rank-badge.r3 { background: rgba(205,127,50,0.15); color: #cd7f32; }
+
+  .player-name-cell { font-weight: 900; font-size: 15px; }
+  .score-pill {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 900;
+    font-size: 14px;
+    background: rgba(245,197,24,0.12);
+    color: var(--accent);
+    border: 1px solid rgba(245,197,24,0.2);
+  }
+  .correct-cell { color: var(--green); font-weight: 700; }
+  .wrong-cell { color: var(--red); font-weight: 700; }
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .status-pill.done { background: rgba(0,230,118,0.1); color: var(--green); }
+  .status-pill.playing { background: rgba(245,197,24,0.1); color: var(--accent); }
+  .status-pill.waiting-s { background: rgba(255,255,255,0.06); color: var(--muted); }
+  .delete-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+  }
+  .delete-btn:hover { color: var(--red); background: rgba(255,23,68,0.1); }
+
+  .empty-state {
+    padding: 60px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-state div { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; }
+
+  /* MODAL CONFIRM */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 999;
+    display: none;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+  .modal h3 { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
+  .modal p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .modal-btns { display: flex; gap: 12px; }
+  .modal-btns button { flex: 1; padding: 12px; border-radius: 10px; border: none; font-family: 'Nunito', sans-serif; font-weight: 900; cursor: pointer; font-size: 14px; }
+  .btn-cancel { background: var(--surface); color: var(--text); }
+  .btn-confirm { background: var(--red); color: #fff; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 9999;
+    transition: transform 0.3s;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* AUTO-REFRESH */
+  .last-update { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  @media(max-width:768px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .controls-row { flex-direction: column; }
+    th:nth-child(4), td:nth-child(4),
+    th:nth-child(5), td:nth-child(5) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ QUIZMASTER ADMIN</h1>
+  <span class="admin-badge">🔑 Panneau Admin</span>
+</header>
+
+<div class="container">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card yellow">
+      <div class="big" id="stat-total">0</div>
+      <div class="lbl">Joueurs inscrits</div>
+    </div>
+    <div class="stat-card green">
+      <div class="big" id="stat-finished">0</div>
+      <div class="lbl">Ont terminé</div>
+    </div>
+    <div class="stat-card pink">
+      <div class="big" id="stat-best">0</div>
+      <div class="lbl">Meilleur score</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="big" id="stat-avg">0</div>
+      <div class="lbl">Score moyen</div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls-card">
+    <h2>🎮 Contrôles de la partie
+      <div class="game-status waiting" id="game-status-badge">
+        <div class="status-dot"></div>
+        <span id="status-text">En attente</span>
+      </div>
+    </h2>
+    <div class="controls-row">
+      <button class="btn btn-start" onclick="startGame()">🚀 Lancer la partie</button>
+      <button class="btn btn-refresh" onclick="refresh()">🔄 Actualiser</button>
+      <button class="btn btn-export" onclick="exportCSV()">📊 Exporter CSV</button>
+      <button class="btn btn-reset" onclick="showResetModal()">🗑️ Réinitialiser tout</button>
+    </div>
+    <p class="last-update" id="last-update">Dernière actualisation : —</p>
+  </div>
+
+  <!-- LEADERBOARD -->
+  <div class="lb-card">
+    <div class="lb-header">
+      <h2>🏅 Classement des joueurs</h2>
+      <input type="text" class="search-box" placeholder="🔍 Rechercher..." id="search-input" oninput="renderTable()">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Joueur</th>
+          <th>Score</th>
+          <th>✅ Correctes</th>
+          <th>❌ Fausses</th>
+          <th>Statut</th>
+          <th>Heure</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="player-table-body">
+      </tbody>
+    </table>
+    <div id="empty-state" class="empty-state" style="display:none">
+      <div>🎮</div>
+      <p>Aucun joueur inscrit pour le moment.<br>Partagez le lien <strong>quiz.html</strong> avec vos amis !</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h3>⚠️ Réinitialiser ?</h3>
+    <p>Cette action supprimera TOUS les joueurs et scores. Impossible d'annuler.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-confirm" onclick="resetAll()">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+let autoRefreshInterval = null;
+
+// ============================================================
+// SECURITY: ADMIN AUTH
+// ============================================================
+const ADMIN_PASSWORD = "admin2024";
+
+function requireAdmin() {
+  const stored = localStorage.getItem('admin_authenticated');
+  if (stored !== 'true') {
+    const pwd = prompt('🔐 Entre le mot de passe admin :');
+    if (pwd !== ADMIN_PASSWORD) {
+      alert('❌ Mot de passe incorrect !');
+      window.location.href = 'quiz.html';
+      return false;
+    }
+    localStorage.setItem('admin_authenticated', 'true');
+  }
+  return true;
+}
+
+// ============================================================
+// DATA (Firebase)
+// ============================================================
+async function getPlayers() {
+  const data = await getPlayersFromDB();
+  return Object.values(data || {});
+}
+
+async function getGameState() {
+  return await getGameStateFromDB();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+async function refresh() {
+  await renderStats();
+  await renderTable();
+  await renderGameStatus();
+  document.getElementById('last-update').textContent =
+    'Dernière actualisation : ' + new Date().toLocaleTimeString('fr-FR');
+}
+
+async function renderStats() {
+  const players = await getPlayers();
+  const finished = players.filter(p => p.finishedAt);
+  const scores = finished.map(p => p.score);
+  const best = scores.length ? Math.max(...scores) : 0;
+  const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+
+  document.getElementById('stat-total').textContent = players.length;
+  document.getElementById('stat-finished').textContent = finished.length;
+  document.getElementById('stat-best').textContent = best;
+  document.getElementById('stat-avg').textContent = avg;
+}
+
+async function renderGameStatus() {
+  const gs = await getGameState();
+  const badge = document.getElementById('game-status-badge');
+  const dot = badge.querySelector('.status-dot');
+  const txt = document.getElementById('status-text');
+  if (gs.status === 'started' || gs.status === 'running') {
+    badge.className = 'game-status running';
+    dot.className = 'status-dot running';
+    txt.textContent = 'Partie en cours';
+  } else {
+    badge.className = 'game-status waiting';
+    dot.className = 'status-dot';
+    txt.textContent = 'En attente';
+  }
+}
+
+async function renderTable() {
+  const players = await getPlayers();
+  const query = document.getElementById('search-input').value.trim().toLowerCase();
+  
+  // Trier: d'abord par score, puis par temps en cas d'égalité
+  const sorted = [...players].sort((a, b) => {
+    // D'abord par score (descending)
+    if (b.score !== a.score) return b.score - a.score;
+    // En cas d'égalité, par temps (ascending - plus rapide = mieux)
+    const timeA = a.finishedAt ? (new Date(a.finishedAt) - new Date(a.registeredAt)) : Infinity;
+    const timeB = b.finishedAt ? (new Date(b.finishedAt) - new Date(b.registeredAt)) : Infinity;
+    return timeA - timeB;
+  });
+  
+  const filtered = query ? sorted.filter(p => p.name.toLowerCase().includes(query)) : sorted;
+
+  const tbody = document.getElementById('player-table-body');
+  const empty = document.getElementById('empty-state');
+
+  if (players.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const rankClass = ['r1','r2','r3'];
+  tbody.innerHTML = filtered.map((p, i) => {
+    // Find global rank
+    const globalRank = sorted.findIndex(sp => sp.id === p.id) + 1;
+    const status = p.finishedAt
+      ? `<span class="status-pill done">✅ Terminé</span>`
+      : `<span class="status-pill playing">⏳ En jeu</span>`;
+    const time = p.finishedAt
+      ? new Date(p.finishedAt).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})
+      : p.registeredAt
+        ? new Date(p.registeredAt).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})
+        : '—';
+    return `
+      <tr>
+        <td><span class="rank-badge ${rankClass[globalRank-1]||''}">${globalRank}</span></td>
+        <td class="player-name-cell">${escapeHtml(p.name)}</td>
+        <td><span class="score-pill">${p.score} pts</span></td>
+        <td class="correct-cell">${p.correctCount || 0}</td>
+        <td class="wrong-cell">${p.wrongCount || 0}</td>
+        <td>${status}</td>
+        <td style="color:var(--muted);font-size:12px">${time}</td>
+        <td><button class="delete-btn" onclick="deletePlayer('${p.id}')" title="Supprimer">🗑️</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ============================================================
+// ACTIONS
+// ============================================================
+async function startGame() {
+  await setGameStateInDB({ status: 'started', startedAt: new Date().toISOString() });
+  await renderGameStatus();
+  showToast('🚀 Partie lancée ! Les joueurs peuvent maintenant démarrer.');
+}
+
+async function deletePlayer(id) {
+  await deletePlayerFromDB(id.toString());
+  await refresh();
+  showToast('Joueur supprimé.');
+}
+
+function showResetModal() {
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+
+async function resetAll() {
+  await resetAllDB();
+  closeModal();
+  await refresh();
+  showToast('✅ Données réinitialisées.');
+}
+
+async function exportCSV() {
+  const players = await getAllPlayersForExport();
+  if (!players.length) { showToast('Aucun joueur à exporter.'); return; }
+  const header = 'Rang,Nom,Score,Correctes,Fausses,Statut,Inscrit à,Terminé à\n';
+  const rows = players.map((p, i) => [
+    i+1,
+    p.name,
+    p.score,
+    p.correctCount || 0,
+    p.wrongCount || 0,
+    p.finishedAt ? 'Terminé' : 'En jeu',
+    p.registeredAt ? new Date(p.registeredAt).toLocaleString('fr-FR') : '',
+    p.finishedAt ? new Date(p.finishedAt).toLocaleString('fr-FR') : ''
+  ].join(',')).join('\n');
+
+  const blob = new Blob(['\ufeff' + header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `quizmaster_resultats_${new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')}.csv`;
+  a.click();
+  showToast('📊 Fichier CSV exporté !');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+(async () => {
+  if (!requireAdmin()) {
+    // Redirect if not admin
+  } else {
+    await refresh();
+    autoRefreshInterval = setInterval(() => refresh(), 5000);
+    
+    // Listen for real-time changes
+    onPlayersChange(() => refresh());
+    onGameStateChange(() => renderGameStatus());
+  }
+})();
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

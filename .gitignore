@@ -1,0 +1,14 @@
+# Firebase Config (contains API keys)
+config.js
+
+# IDE
+.vscode/
+.DS_Store
+
+# Node (si vous ajoutez npm packages plus tard)
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
