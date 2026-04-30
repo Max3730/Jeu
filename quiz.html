@@ -461,99 +461,93 @@ const db = getDatabase(app);
 console.log('Firebase initialisé', app);
 
 // ============================================================
-// QUESTIONS DATABASE — 60 questions sur le Bénin
+// QUESTIONS DATABASE — 60 questions
 // ============================================================
 const QUESTIONS = [
-  // Géographie du Bénin
-  { q:"Quelle est la capitale politique du Bénin ?", opts:["Cotonou","Porto-Novo","Parakou","Ouidah"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la capitale économique du Bénin ?", opts:["Porto-Novo","Cotonou","Abomey","Bohicon"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Combien de départements compte le Bénin ?", opts:["10","11","12","13"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel pays borde le Bénin à l'ouest ?", opts:["Nigeria","Togo","Burkina Faso","Niger"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel pays borde le Bénin à l'est ?", opts:["Togo","Nigeria","Ghana","Côte d'Ivoire"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel pays borde le Bénin au nord ?", opts:["Nigeria","Togo","Niger","Burkina Faso"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel océan borde le sud du Bénin ?", opts:["Océan Atlantique","Océan Indien","Océan Pacifique","Méditerranée"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la plus grande ville du Bénin ?", opts:["Porto-Novo","Cotonou","Parakou","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel fleuve forme la frontière avec le Nigeria ?", opts:["Ouémé","Mono","Niger","Couffo"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la superficie approximative du Bénin ?", opts:["110 000 km²","115 000 km²","120 000 km²","125 000 km²"], ans:1, cat:"🇧🇯 Bénin" },
+  // Géographie
+  { q:"Quelle est la capitale du Bénin ?", opts:["Porto-Novo","Cotonou","Parakou","Abomey"], ans:0, cat:"🌍 Géographie" },
+  { q:"Quel est le plus grand pays du monde en superficie ?", opts:["Canada","Chine","USA","Russie"], ans:3, cat:"🌍 Géographie" },
+  { q:"Sur quel continent se trouve le Nigeria ?", opts:["Asie","Amérique","Afrique","Europe"], ans:2, cat:"🌍 Géographie" },
+  { q:"Quelle mer borde le nord de l'Afrique ?", opts:["Mer Rouge","Océan Indien","Mer Méditerranée","Mer Noire"], ans:2, cat:"🌍 Géographie" },
+  { q:"Quel fleuve traverse l'Égypte ?", opts:["Congo","Niger","Nil","Zambèze"], ans:2, cat:"🌍 Géographie" },
+  { q:"Quelle est la capitale du Sénégal ?", opts:["Abidjan","Dakar","Lomé","Bamako"], ans:1, cat:"🌍 Géographie" },
+  { q:"Quel est le plus haut sommet du monde ?", opts:["Mont Blanc","Kilimandjaro","Everest","Aconcagua"], ans:2, cat:"🌍 Géographie" },
+  { q:"Quelle est la capitale du Brésil ?", opts:["Rio de Janeiro","São Paulo","Brasilia","Salvador"], ans:2, cat:"🌍 Géographie" },
 
-  // Histoire du Bénin
-  { q:"Quel était l'ancien nom du Bénin ?", opts:["Dahomey","Côte d'Or","Haute-Volta","Congo"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"En quelle année le Bénin a-t-il obtenu son indépendance ?", opts:["1958","1959","1960","1961"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"De quel pays le Bénin était-il colonie ?", opts:["France","Angleterre","Portugal","Allemagne"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quel empire a régné sur le sud du Bénin ?", opts:["Empire du Mali","Empire du Dahomey","Empire Songhaï","Empire Ashanti"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville était la capitale du royaume du Dahomey ?", opts:["Porto-Novo","Abomey","Ouidah","Cotonou"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"En quelle année le Bénin a-t-il changé de nom (Dahomey → Bénin) ?", opts:["1972","1973","1974","1975"], ans:3, cat:"🇧🇯 Bénin" },
-  { q:"Qui était le premier président du Bénin indépendant ?", opts:["Mathieu Kérékou","Hubert Maga","Sourou-Migan Apithy","Emile Derlin Zinsou"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"En quelle année a eu lieu la Conférence Nationale du Bénin ?", opts:["1988","1989","1990","1991"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel roi du Dahomey a résisté à la colonisation ?", opts:["Béhanzin","Guezo","Agadja","Tegbessou"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Où se trouve la 'Porte du Non-Retour' ?", opts:["Cotonou","Ouidah","Grand-Popo","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
+  // Sciences
+  { q:"Quelle est la formule chimique de l'eau ?", opts:["CO2","H2O","O2","NaCl"], ans:1, cat:"🔬 Sciences" },
+  { q:"Combien de planètes compte notre système solaire ?", opts:["7","8","9","10"], ans:1, cat:"🔬 Sciences" },
+  { q:"Quelle planète est surnommée la planète rouge ?", opts:["Vénus","Jupiter","Mars","Saturne"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quel organe du corps humain filtre le sang ?", opts:["Poumons","Foie","Reins","Estomac"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quelle est la vitesse de la lumière (approx.) ?", opts:["100 000 km/s","300 000 km/s","150 000 km/s","500 000 km/s"], ans:1, cat:"🔬 Sciences" },
+  { q:"Combien de chromosomes possède l'être humain ?", opts:["23","44","46","48"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quel gaz représente environ 78% de l'atmosphère terrestre ?", opts:["Oxygène","Azote","CO2","Argon"], ans:1, cat:"🔬 Sciences" },
+  { q:"Qui a découvert la pénicilline ?", opts:["Pasteur","Fleming","Curie","Darwin"], ans:1, cat:"🔬 Sciences" },
 
-  // Culture et Traditions
-  { q:"Quel est le peuple traditionnel du sud du Bénin ?", opts:["Fon","Yoruba","Bariba","Dendi"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quel est le peuple traditionnel du nord du Bénin ?", opts:["Fon","Yoruba","Bariba","Dendi"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la langue officielle du Bénin ?", opts:["Anglais","Français","Portugais","Espagnol"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Combien de langues nationales sont parlées au Bénin ?", opts:["environ 40","environ 50","environ 60","environ 70"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel est le dieu créateur chez les Fon ?", opts:["Mawu","Legba","Sakpata","Hevioso"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle fête traditionnelle célèbre les ancêtres au Bénin ?", opts:["Fête de l'Indépendance","Fête Vodun","Fête du Tabaski","Fête de Pâques"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel tissu traditionnel est célèbre au Bénin ?", opts:["Kente","Bogolan","Pagne","Wax"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quelle danse traditionnelle est originaire du Bénin ?", opts:["Coupe-décalé","Makossa","Zinli","Azonto"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel instrument de musique est typique du Bénin ?", opts:["Kora","Djembe","Balafon","Sitar"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle religion est très pratiquée au sud du Bénin ?", opts:["Islam","Christianisme","Vodun","Bouddhisme"], ans:2, cat:"🇧🇯 Bénin" },
+  // Histoire
+  { q:"En quelle année a eu lieu la Révolution française ?", opts:["1776","1789","1799","1815"], ans:1, cat:"📜 Histoire" },
+  { q:"Qui était le premier président des États-Unis ?", opts:["Lincoln","Jefferson","Washington","Adams"], ans:2, cat:"📜 Histoire" },
+  { q:"Quel empire avait pour capitale Constantinople ?", opts:["Romain","Ottoman","Byzantin","Perse"], ans:2, cat:"📜 Histoire" },
+  { q:"En quelle année l'Afrique du Sud a aboli l'apartheid ?", opts:["1984","1990","1994","1998"], ans:2, cat:"📜 Histoire" },
+  { q:"Qui a écrit 'Les Misérables' ?", opts:["Balzac","Flaubert","Victor Hugo","Zola"], ans:2, cat:"📜 Histoire" },
+  { q:"Quelle civilisation a construit les pyramides de Gizeh ?", opts:["Romaine","Grecque","Égyptienne","Mésopotamienne"], ans:2, cat:"📜 Histoire" },
+  { q:"En quelle année la Seconde Guerre mondiale a-t-elle pris fin ?", opts:["1943","1944","1945","1946"], ans:2, cat:"📜 Histoire" },
+  { q:"Qui a été le premier homme à marcher sur la Lune ?", opts:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"], ans:2, cat:"📜 Histoire" },
 
-  // Politique et Institutions
-  { q:"Quel est le régime politique du Bénin ?", opts:["Monarchie","République présidentielle","République parlementaire","Dictature"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Combien de mandats présidentiels peut-on faire au Bénin ?", opts:["1","2","3","Illimité"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la durée d'un mandat présidentiel au Bénin ?", opts:["4 ans","5 ans","6 ans","7 ans"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Qui est l'actuel président du Bénin (2024) ?", opts:["Thomas Boni Yayi","Patrice Talon","Romual Wadagni","Nicéphore Soglo"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"En quelle année Patrice Talon a-t-il été élu ?", opts:["2014","2015","2016","2017"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel ancien président a introduit le multipartisme au Bénin ?", opts:["Mathieu Kérékou","Nicéphore Soglo","Yayi Boni","Hubert Maga"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Où siège l'Assemblée Nationale du Bénin ?", opts:["Cotonou","Porto-Novo","Parakou","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Combien de députés compte l'Assemblée Nationale du Bénin ?", opts:["77","83","109","113"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la monnaie du Bénin ?", opts:["Naira","Cedi","Franc CFA","Dollar"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"À quelle zone monétaire appartient le Bénin ?", opts:["CEMAC","UEMOA","ECOWAS","SADC"], ans:1, cat:"🇧🇯 Bénin" },
+  // Sport
+  { q:"Combien de joueurs compte une équipe de football ?", opts:["9","10","11","12"], ans:2, cat:"⚽ Sport" },
+  { q:"Dans quel pays ont eu lieu les JO de 2024 ?", opts:["USA","Japon","France","Australie"], ans:2, cat:"⚽ Sport" },
+  { q:"Combien de sets dans un match de tennis au Grand Chelem (hommes) ?", opts:["3","4","5","2"], ans:2, cat:"⚽ Sport" },
+  { q:"Quel pays a remporté la Coupe du Monde 2022 ?", opts:["Brésil","France","Argentine","Allemagne"], ans:2, cat:"⚽ Sport" },
+  { q:"Combien de joueurs dans une équipe de basketball ?", opts:["4","5","6","7"], ans:1, cat:"⚽ Sport" },
+  { q:"Quel sport se joue avec un volant ?", opts:["Tennis","Badminton","Squash","Ping-pong"], ans:1, cat:"⚽ Sport" },
+  { q:"Dans quel sport utilise-t-on un 'smash' ?", opts:["Football","Volleyball","Golf","Rugby"], ans:1, cat:"⚽ Sport" },
+  { q:"Quelle est la distance du marathon ?", opts:["21 km","30 km","42,195 km","50 km"], ans:2, cat:"⚽ Sport" },
 
-  // Économie
-  { q:"Quelle est la principale culture d'exportation du Bénin ?", opts:["Café","Cacao","Coton","Huile de palme"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel est le principal port du Bénin ?", opts:["Port de Cotonou","Port de Porto-Novo","Port de Grand-Popo","Port de Ouidah"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ressource naturelle est exploitée au Bénin ?", opts:["Pétrole","Or","Diamant","Calcaire"], ans:3, cat:"🇧🇯 Bénin" },
-  { q:"Quel secteur emploie le plus de personnes au Bénin ?", opts:["Industrie","Services","Agriculture","Tourisme"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel pays est le principal partenaire commercial du Bénin ?", opts:["France","Nigeria","Chine","États-Unis"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville est connue pour son marché au Bénin ?", opts:["Dantokpa","Akpakpa","Ganhi","Fidjrossè"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quel produit artisanal est célèbre à Ouidah ?", opts:["Sculpture sur bois","Tissage","Poterie","Bijoux"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle est la principale source d'énergie au Bénin ?", opts:["Charbon","Gaz","Hydroélectricité","Solaire"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel aéroport international dessert le Bénin ?", opts:["Aéroport de Parakou","Aéroport de Cadjehoun","Aéroport de Natitingou","Aéroport de Savé"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville est un centre commercial important au Bénin ?", opts:["Abomey","Bohicon","Malanville","Savalou"], ans:1, cat:"🇧🇯 Bénin" },
+  // Culture Générale
+  { q:"Quelle est la couleur du ciel par temps clair ?", opts:["Vert","Bleu","Rouge","Jaune"], ans:1, cat:"🧠 Culture" },
+  { q:"Combien font 15 × 15 ?", opts:["200","215","225","230"], ans:2, cat:"🧠 Culture" },
+  { q:"Quel animal est le symbole de l'Australie ?", opts:["Koala","Kangourou","Crocodile","Dingo"], ans:1, cat:"🧠 Culture" },
+  { q:"Combien de lettres dans l'alphabet français ?", opts:["24","25","26","27"], ans:2, cat:"🧠 Culture" },
+  { q:"Quelle langue est la plus parlée au monde ?", opts:["Anglais","Espagnol","Mandarin","Hindi"], ans:2, cat:"🧠 Culture" },
+  { q:"Quel est le métal le plus précieux ?", opts:["Argent","Or","Platine","Titane"], ans:2, cat:"🧠 Culture" },
+  { q:"Combien y a-t-il de continents ?", opts:["5","6","7","8"], ans:2, cat:"🧠 Culture" },
+  { q:"Quel est le plus grand océan du monde ?", opts:["Atlantique","Indien","Arctique","Pacifique"], ans:3, cat:"🧠 Culture" },
 
-  // Tourisme et Sites
-  { q:"Quel est le site touristique le plus célèbre du Bénin ?", opts:["Musée d'Abomey","Plage de Grand-Popo","Parc de la Pendjari","Lac Nokoué"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Où se trouve le Parc National de la Pendjari ?", opts:["Sud du Bénin","Centre du Bénin","Nord du Bénin","Est du Bénin"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quel animal peut-on observer dans la Pendjari ?", opts:["Lion","Éléphant","Hippopotame","Les trois"], ans:3, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville est connue pour ses Tata Somba ?", opts:["Natitingou","Parakou","Djougou","Kandi"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Qu'est-ce que les Tata Somba ?", opts:["Châteaux","Maisons fortifiées","Temples","Ponts"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel lac est situé près de Cotonou ?", opts:["Lac Ahémé","Lac Nokoué","Lac Toho","Lac Azili"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville est connue pour ses plages ?", opts:["Grand-Popo","Parakou","Abomey","Savalou"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Où se trouve le Musée Historique d'Abomey ?", opts:["Abomey","Porto-Novo","Ouidah","Cotonou"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quel site commémore l'esclavage ?", opts:["Musée d'Abomey","Porte du Non-Retour","Parc de la Pendjari","Lac Nokoué"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle ville est connue pour ses féticheurs ?", opts:["Cotonou","Ouidah","Porto-Novo","Parakou"], ans:1, cat:"🇧🇯 Bénin" },
+  // Musique
+  { q:"Qui est surnommé 'Le Roi du Pop' ?", opts:["Prince","Elvis","Michael Jackson","Bruno Mars"], ans:2, cat:"🎵 Musique" },
+  { q:"De quel pays vient le groupe 'Maná' ?", opts:["Argentine","Mexique","Espagne","Colombie"], ans:1, cat:"🎵 Musique" },
+  { q:"Combien de cordes a une guitare standard ?", opts:["4","5","6","7"], ans:2, cat:"🎵 Musique" },
+  { q:"Quel instrument joue Beethoven ?", opts:["Violon","Flûte","Piano","Trompette"], ans:2, cat:"🎵 Musique" },
+
+  // Technologie
+  { q:"Qui a fondé Microsoft ?", opts:["Steve Jobs","Elon Musk","Bill Gates","Mark Zuckerberg"], ans:2, cat:"💻 Tech" },
+  { q:"Que signifie 'WWW' ?", opts:["World Wide Web","World Wire Web","Wide World Web","Web World Wire"], ans:0, cat:"💻 Tech" },
+  { q:"Quel pays a inventé le papier ?", opts:["Japon","Inde","Chine","Égypte"], ans:2, cat:"💻 Tech" },
+  { q:"En quelle année a été fondé Facebook ?", opts:["2002","2004","2006","2008"], ans:1, cat:"💻 Tech" },
+
+  // Nature
+  { q:"Quel animal est le plus rapide sur terre ?", opts:["Guépard","Lion","Faucon","Cheval"], ans:0, cat:"🦁 Nature" },
+  { q:"Combien de pattes a une araignée ?", opts:["6","7","8","10"], ans:2, cat:"🦁 Nature" },
+  { q:"Quel est le plus grand mammifère marin ?", opts:["Grand requin blanc","Requin baleine","Baleine bleue","Orque"], ans:2, cat:"🦁 Nature" },
+  { q:"De quoi se nourrit principalement le panda ?", opts:["Poisson","Bambou","Insectes","Fruits"], ans:1, cat:"🦁 Nature" },
 
   // Gastronomie
-  { q:"Quel plat est le plus populaire au Bénin ?", opts:["Riz gras","Foufou","Amiwo","Pâte d'arachide"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"De quoi est composé l'Amiwo ?", opts:["Riz et haricots","Maïs et sauce rouge","Manioc et poisson","Millet et lait"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quelle boisson traditionnelle est consommée au Bénin ?", opts:["Bissap","Tchoukoutou","Jus d'ananas","Sodabi"], ans:3, cat:"🇧🇯 Bénin" },
-  { q:"De quoi est fait le Sodabi ?", opts:["Vin de palme","Jus de canne à sucre","Eau de vie de maïs","Bière de mil"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quel fruit est très consommé au Bénin ?", opts:["Mangue","Ananas","Papaye","Banane"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle épice est utilisée dans la cuisine béninoise ?", opts:["Curcuma","Piment","Gingembre","Cannelle"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel plat est préparé avec du gari ?", opts:["Gari et sauce","Riz et gari","Foufou et gari","Pâte et gari"], ans:0, cat:"🇧🇯 Bénin" },
-  { q:"Quelle huile est utilisée dans la cuisine béninoise ?", opts:["Huile d'olive","Huile de palme","Huile de tournesol","Huile de coco"], ans:1, cat:"🇧🇯 Bénin" },
-  { q:"Quel poisson est populaire au Bénin ?", opts:["Thon","Carpe","Capitaine","Sardine"], ans:2, cat:"🇧🇯 Bénin" },
-  { q:"Quelle pâtisserie est typique du Bénin ?", opts:["Croissant","Gâteau","Akassa","Chin chin"], ans:3, cat:"🇧🇯 Bénin" },
+  { q:"De quel pays vient la pizza ?", opts:["France","Espagne","Grèce","Italie"], ans:3, cat:"🍕 Gastronomie" },
+  { q:"Quelle épice donne une couleur jaune au curry ?", opts:["Paprika","Curcuma","Safran","Cannelle"], ans:1, cat:"🍕 Gastronomie" },
+  { q:"Le riz est-il un légume ou une céréale ?", opts:["Légume","Céréale","Fruit","Tubercule"], ans:1, cat:"🍕 Gastronomie" },
+  { q:"De quel pays vient le chocolat originellement ?", opts:["Suisse","Belgique","Mésoamérique (Mayas/Aztèques)","Ghana"], ans:2, cat:"🍕 Gastronomie" },
+
+  // Cinéma
+  { q:"Quel film a récolté le plus d'oscars (11) à deux reprises ?", opts:["Titanic","Le Seigneur des Anneaux","Ben-Hur","Schindler's List"], ans:2, cat:"🎬 Cinéma" },
+  { q:"Dans quelle ville se passe 'Black Panther' ?", opts:["Lagos","Wakanda","Cairo","Johannesburg"], ans:1, cat:"🎬 Cinéma" },
 ];
 
 // ============================================================
 // STATE
 // ============================================================
-const QUESTIONS_PER_GAME = 30;
-const TIME_PER_QUESTION = 10; // secondes
+const QUESTIONS_PER_GAME = 15;
+const TIME_PER_QUESTION = 12; // secondes
 const POINTS_PER_CORRECT = 5;
 
 let currentPlayer = null;
