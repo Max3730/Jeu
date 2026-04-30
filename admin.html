@@ -313,6 +313,77 @@
   /* AUTO-REFRESH */
   .last-update { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
+  /* LOGIN SCREEN */
+  .login-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  .login-screen.hidden { display: none; }
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+  }
+  .login-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .login-input {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-input::placeholder { color: var(--muted); font-weight: 400; }
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), #e6b800);
+    color: #000;
+    box-shadow: 0 6px 24px rgba(245,197,24,0.3);
+  }
+  .login-btn:hover { box-shadow: 0 8px 32px rgba(245,197,24,0.5); }
+  .login-error {
+    color: var(--red);
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+  .login-error.show { display: block; }
+
   @media(max-width:768px) {
     .stats-row { grid-template-columns: repeat(2, 1fr); }
     .controls-row { flex-direction: column; }
@@ -323,12 +394,23 @@
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-card">
+    <h2>🔐 ADMIN</h2>
+    <p>Entrez le mot de passe pour accéder au panneau</p>
+    <input type="password" class="login-input" id="admin-password" placeholder="Mot de passe..." autocomplete="off">
+    <button class="login-btn" onclick="checkPassword()">ACCÉDER</button>
+    <div class="login-error" id="login-error">⚠️ Mot de passe incorrect</div>
+  </div>
+</div>
+
 <header>
   <h1>⚡ QUIZMASTER ADMIN</h1>
   <span class="admin-badge">🔑 Panneau Admin</span>
 </header>
 
-<div class="container">
+<div class="container" id="admin-content" style="display:none">
 
   <!-- STATS -->
   <div class="stats-row">
@@ -432,6 +514,36 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+
+// ============================================================
+// ADMIN PASSWORD PROTECTION
+// ============================================================
+const ADMIN_PASSWORD = 'max30020'; // Change ce mot de passe !
+
+function checkPassword() {
+  const input = document.getElementById('admin-password');
+  const error = document.getElementById('login-error');
+  const loginScreen = document.getElementById('login-screen');
+  const adminContent = document.getElementById('admin-content');
+
+  if (input.value === ADMIN_PASSWORD) {
+    loginScreen.classList.add('hidden');
+    adminContent.style.display = 'block';
+    // Start refresh only after login
+    refresh();
+    autoRefreshInterval = setInterval(refresh, 5000);
+  } else {
+    error.classList.add('show');
+    input.value = '';
+    input.focus();
+    setTimeout(() => error.classList.remove('show'), 3000);
+  }
+}
+
+// Check password on Enter key
+document.getElementById('admin-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
 
 let autoRefreshInterval = null;
 
@@ -635,8 +747,7 @@ function showToast(msg) {
 // ============================================================
 // INIT
 // ============================================================
-refresh();
-autoRefreshInterval = setInterval(refresh, 5000); // auto-refresh every 5s
+// Don't auto-refresh until logged in
 
 // Expose functions to window for onclick handlers
 window.deletePlayer = deletePlayer;
@@ -646,6 +757,7 @@ window.refresh = refresh;
 window.exportCSV = exportCSV;
 window.closeModal = closeModal;
 window.showResetModal = showResetModal;
+window.checkPassword = checkPassword;
 
 // Close modal on overlay click
 document.getElementById('modal-overlay').addEventListener('click', function(e) {
