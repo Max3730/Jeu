@@ -707,13 +707,29 @@ function showQuestion() {
   document.getElementById('feedback').className = 'feedback';
   document.getElementById('time-up-banner').className = 'time-up-banner';
 
+  // Shuffle options with tracking of correct answer
+  const shuffledOptions = q.opts.map((opt, originalIndex) => ({
+    text: opt,
+    originalIndex: originalIndex
+  })).sort(() => Math.random() - 0.5);
+
+  // Find new position of correct answer
+  const newCorrectIndex = shuffledOptions.findIndex(opt => opt.originalIndex === q.ans);
+
+  // Store the shuffled question with new correct index
+  gameQuestions[currentQIndex] = {
+    ...q,
+    shuffledOpts: shuffledOptions.map(o => o.text),
+    shuffledAns: newCorrectIndex
+  };
+
   const grid = document.getElementById('options-grid');
   const letters = ['A','B','C','D'];
   grid.innerHTML = '';
-  q.opts.forEach((opt, i) => {
+  shuffledOptions.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt.text}`;
     btn.onclick = () => selectAnswer(i, btn);
     grid.appendChild(btn);
   });
@@ -754,7 +770,10 @@ function selectAnswer(idx, btn) {
   btns.forEach(b => b.disabled = true);
 
   const fb = document.getElementById('feedback');
-  if (idx === q.ans) {
+  const correctIndex = q.shuffledAns !== undefined ? q.shuffledAns : q.ans;
+  const options = q.shuffledOpts || q.opts;
+
+  if (idx === correctIndex) {
     btn.classList.add('correct');
     score += POINTS_PER_CORRECT;
     correctCount++;
@@ -762,9 +781,9 @@ function selectAnswer(idx, btn) {
     fb.className = 'feedback correct-fb show';
   } else {
     btn.classList.add('wrong');
-    btns[q.ans].classList.add('correct');
+    btns[correctIndex].classList.add('correct');
     wrongCount++;
-    fb.textContent = '❌ Mauvaise réponse ! La bonne réponse était : ' + q.opts[q.ans];
+    fb.textContent = '❌ Mauvaise réponse ! La bonne réponse était : ' + options[correctIndex];
     fb.className = 'feedback wrong-fb show';
   }
 
@@ -781,7 +800,8 @@ function timeUp() {
   const q = gameQuestions[currentQIndex];
   const btns = document.querySelectorAll('.option-btn');
   btns.forEach(b => b.disabled = true);
-  btns[q.ans].classList.add('correct');
+  const correctIndex = q.shuffledAns !== undefined ? q.shuffledAns : q.ans;
+  btns[correctIndex].classList.add('correct');
   wrongCount++;
   document.getElementById('time-up-banner').className = 'time-up-banner show';
 
