@@ -1,1 +1,911 @@
 
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Culture Générale</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --card: #1c1c28;
+    --accent: #f5c518;
+    --accent2: #e84393;
+    --green: #00e676;
+    --red: #ff1744;
+    --text: #f0f0f0;
+    --muted: #888;
+    --border: rgba(245,197,24,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(245,197,24,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(232,67,147,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .screen { display:none; width:100%; max-width:640px; padding:24px; animation: fadeUp 0.4s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* LOGO */
+  .logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .logo h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    letter-spacing: 4px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo p { color: var(--muted); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top:4px; }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .card h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  .card p.sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+  /* INPUTS */
+  input[type=text] {
+    width: 100%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 18px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  input[type=text]:focus { border-color: var(--accent); }
+  input[type=text]::placeholder { color: var(--muted); font-weight: 400; }
+
+  /* BUTTONS */
+  .btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #e6b800);
+    color: #000;
+    box-shadow: 0 6px 24px rgba(245,197,24,0.3);
+  }
+  .btn-primary:hover { box-shadow: 0 8px 32px rgba(245,197,24,0.5); }
+  .btn-secondary {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    color: var(--text);
+    margin-top: 10px;
+  }
+
+  /* WAITING SCREEN */
+  .waiting-icon {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 20px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(245,197,24,0.4)} 50%{transform:scale(1.05);box-shadow:0 0 0 20px rgba(245,197,24,0)} }
+  .waiting-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-align: center;
+  }
+  .waiting-text { text-align: center; color: var(--muted); font-size: 14px; margin-top: 8px; }
+  .player-count {
+    text-align: center;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .player-count span { color: var(--accent); font-weight: 900; font-size: 20px; }
+
+  /* QUIZ SCREEN */
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .score-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .score-badge span { color: var(--accent); }
+  .q-counter { color: var(--muted); font-size: 13px; font-weight: 700; }
+
+  /* TIMER */
+  .timer-wrap { margin-bottom: 16px; }
+  .timer-bar-bg {
+    height: 8px;
+    background: var(--surface);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .timer-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--accent));
+    border-radius: 99px;
+    transition: width 1s linear, background 0.3s;
+  }
+  .timer-bar.danger { background: linear-gradient(90deg, var(--red), #ff6b35); }
+  .timer-nums { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+  .timer-nums strong { color: var(--text); font-size: 18px; font-weight: 900; }
+
+  /* QUESTION */
+  .q-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 24px;
+    min-height: 60px;
+  }
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .option-btn {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 12px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option-btn .opt-letter {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    flex-shrink: 0;
+    color: var(--accent);
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: rgba(245,197,24,0.08);
+    transform: translateY(-2px);
+  }
+  .option-btn.correct {
+    background: rgba(0,230,118,0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .option-btn.correct .opt-letter { background: var(--green); color: #000; }
+  .option-btn.wrong {
+    background: rgba(255,23,68,0.12);
+    border-color: var(--red);
+    color: var(--red);
+  }
+  .option-btn.wrong .opt-letter { background: var(--red); color: #fff; }
+  .option-btn:disabled { cursor: not-allowed; }
+
+  /* FEEDBACK */
+  .feedback {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeUp 0.3s ease; }
+  .feedback.correct-fb { background: rgba(0,230,118,0.15); color: var(--green); border: 1px solid rgba(0,230,118,0.3); }
+  .feedback.wrong-fb { background: rgba(255,23,68,0.1); color: var(--red); border: 1px solid rgba(255,23,68,0.3); }
+
+  /* FINAL SCREEN */
+  .final-trophy {
+    font-size: 64px;
+    text-align: center;
+    margin-bottom: 16px;
+    animation: bounce 1s ease;
+  }
+  @keyframes bounce { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+  .final-score-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px;
+    text-align: center;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .final-score-label { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .final-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat-box {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-box .val { font-size: 24px; font-weight: 900; color: var(--accent); }
+  .stat-box .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  /* LEADERBOARD PREVIEW */
+  .leaderboard { margin-top: 20px; }
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: var(--surface);
+    transition: background 0.2s;
+  }
+  .lb-row.me { background: rgba(245,197,24,0.1); border: 1px solid rgba(245,197,24,0.2); }
+  .lb-rank { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--muted); width: 28px; }
+  .lb-rank.gold { color: #ffd700; }
+  .lb-rank.silver { color: #c0c0c0; }
+  .lb-rank.bronze { color: #cd7f32; }
+  .lb-name { flex: 1; font-weight: 700; }
+  .lb-pts { font-weight: 900; color: var(--accent); }
+
+  /* TIME EXPIRED */
+  .time-up-banner {
+    background: rgba(255,23,68,0.15);
+    border: 1px solid rgba(255,23,68,0.3);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    color: var(--red);
+    font-weight: 900;
+    font-size: 18px;
+    display: none;
+    margin-bottom: 16px;
+  }
+  .time-up-banner.show { display: block; animation: fadeUp 0.3s ease; }
+
+  @media(max-width:480px) {
+    .options { grid-template-columns: 1fr; }
+    .logo h1 { font-size: 48px; }
+    .q-text { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: REGISTER -->
+<div class="screen active" id="screen-register">
+  <div class="logo">
+    <h1>QUIZMASTER</h1>
+    <p>Culture Générale • Multijoueur</p>
+  </div>
+  <div class="card">
+    <h2>Rejoindre la partie 🎯</h2>
+    <p class="sub">Entre ton nom pour commencer</p>
+    <input type="text" id="player-name" placeholder="Ton prénom..." maxlength="20" autocomplete="off">
+    <div id="name-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;">⚠️ Entre un prénom valide (min. 2 caractères)</div>
+    <button class="btn btn-primary" onclick="registerPlayer()">REJOINDRE LE JEU →</button>
+    <button class="btn btn-secondary" onclick="window.open('admin.html','_blank')">🔑 Panel Admin</button>
+  </div>
+</div>
+
+<!-- SCREEN 2: WAITING -->
+<div class="screen" id="screen-waiting">
+  <div class="logo">
+    <h1>QUIZMASTER</h1>
+  </div>
+  <div class="card" style="text-align:center">
+    <div class="waiting-icon">⚡</div>
+    <div class="waiting-name" id="waiting-name-display"></div>
+    <p class="waiting-text">Tu es dans la salle d'attente</p>
+    <div class="player-count">
+      <span id="lobby-count">0</span> joueur(s) inscrit(s)
+    </div>
+    <p style="margin-top:20px;color:var(--muted);font-size:13px;">En attente du lancement par l'admin...</p>
+    <div id="game-ready-msg" style="display:none;margin-top:16px;">
+      <div style="background:rgba(0,230,118,0.15);border:1px solid rgba(0,230,118,0.3);border-radius:12px;padding:16px;color:var(--green);font-weight:700;">
+        🚀 La partie démarre ! Prépare-toi...
+      </div>
+      <button class="btn btn-primary" style="margin-top:12px" onclick="startQuiz()">C'EST PARTI !</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: QUIZ -->
+<div class="screen" id="screen-quiz">
+  <div class="quiz-header">
+    <div class="score-badge">Score : <span id="live-score">0</span></div>
+    <div class="q-counter">Q <span id="q-current">1</span> / <span id="q-total">10</span></div>
+  </div>
+
+  <div class="timer-wrap">
+    <div class="timer-bar-bg">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
+    <div class="timer-nums">
+      <span>Temps</span>
+      <strong id="timer-display">10</strong>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="time-up-banner" id="time-up-banner">⏱️ Temps écoulé !</div>
+    <div class="q-number" id="q-category">Catégorie</div>
+    <div class="q-text" id="q-text">Question...</div>
+    <div class="options" id="options-grid"></div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<!-- SCREEN 4: FINAL -->
+<div class="screen" id="screen-final">
+  <div class="logo"><h1>QUIZMASTER</h1></div>
+  <div class="card">
+    <div class="final-trophy" id="final-trophy">🏆</div>
+    <div class="final-score-big" id="final-score-display">0</div>
+    <div class="final-score-label">points au total</div>
+
+    <div class="final-stats">
+      <div class="stat-box">
+        <div class="val" id="stat-correct">0</div>
+        <div class="lbl">Correctes</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" id="stat-wrong">0</div>
+        <div class="lbl">Fausses</div>
+      </div>
+      <div class="stat-box">
+        <div class="val" id="stat-pct">0%</div>
+        <div class="lbl">Réussite</div>
+      </div>
+    </div>
+
+    <div class="leaderboard">
+      <p style="font-weight:900;margin-bottom:10px;">🏅 Classement</p>
+      <div id="leaderboard-list"></div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:20px" onclick="playAgain()">REJOUER</button>
+  </div>
+</div>
+
+<script type="module">
+// ============================================================
+// FIREBASE SETUP
+// ============================================================
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js';
+import { getDatabase, ref, set, onValue, push, update, get } from 'https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDm3HvfygSwEwoU0AgOBmtePK10YM1AWq4",
+  authDomain: "quimaster-47e01.firebaseapp.com",
+  databaseURL: "https://quimaster-47e01-default-rtdb.firebaseio.com",
+  projectId: "quimaster-47e01",
+  storageBucket: "quimaster-47e01.firebasestorage.app",
+  messagingSenderId: "826062192341",
+  appId: "1:826062192341:web:1200da673512e1778c6c5c",
+  measurementId: "G-R1PJ1J6LQ6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+console.log('Firebase initialisé', app);
+
+// ============================================================
+// QUESTIONS DATABASE — 60 questions professionnelles
+// ============================================================
+const QUESTIONS = [
+  // Géographie
+  { q:"Quel est le pays le plus peuplé d'Afrique ?", opts:["Égypte","Nigeria","Éthiopie","RD Congo"], ans:1, cat:"🌍 Géographie" },
+  { q:"Quelle capitale asiatique s'appelle autrefois 'Saïgon' ?", opts:["Hanoï","Bangkok","Ho Chi Minh Ville","Phnom Penh"], ans:2, cat:"🌍 Géographie" },
+  { q:"Quel désert est le plus chaud du monde ?", opts:["Sahara","Désert de Gobi","Désert d'Atacama","Désert de Sonora"], ans:0, cat:"🌍 Géographie" },
+  { q:"Quel pays possède le plus de fuseaux horaires ?", opts:["Russie","États-Unis","Chine","France"], ans:3, cat:"🌍 Géographie" },
+  { q:"Quelle île méditerranéenne appartient à l'Italie ?", opts:["Corse","Sardaigne","Crète","Sicile"], ans:3, cat:"🌍 Géographie" },
+  { q:"Quel est le plus petit pays d'Amérique du Sud ?", opts:["Suriname","Uruguay","Guyane","Paraguay"], ans:0, cat:"🌍 Géographie" },
+  { q:"Quelle ville est surnommée 'La Ville Éternelle' ?", opts:["Athènes","Rome","Jérusalem","Le Caire"], ans:1, cat:"🌍 Géographie" },
+  { q:"Quel fleuve traverse le plus de pays ?", opts:["Amazone","Nil","Danube","Mississippi"], ans:2, cat:"🌍 Géographie" },
+
+  // Sciences
+  { q:"Quel gaz est principalement responsable de l'effet de serre ?", opts:["Oxygène","Azote","CO2","Méthane"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quelle partie du cerveau contrôle la mémoire ?", opts:["Cervelet","Hippocampe","Cortex moteur","Bulbe rachidien"], ans:1, cat:"🔬 Sciences" },
+  { q:"Quel est l'élément le plus abondant dans l'univers ?", opts:["Oxygène","Carbone","Hydrogène","Hélium"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quelle est la vitesse du son dans l'air (approx.) ?", opts:["300 m/s","340 m/s","400 m/s","500 m/s"], ans:1, cat:"🔬 Sciences" },
+  { q:"Quel organe produit l'insuline ?", opts:["Foie","Estomac","Pancréas","Reins"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quelle force maintient les planètes en orbite ?", opts:["Électromagnétique","Nucléaire","Gravitation","Magnétique"], ans:2, cat:"🔬 Sciences" },
+  { q:"Quel est le point d'ébullition de l'eau ?", opts:["90°C","100°C","110°C","120°C"], ans:1, cat:"🔬 Sciences" },
+  { q:"Quelle planète a le plus de lunes ?", opts:["Jupiter","Saturne","Uranus","Neptune"], ans:1, cat:"🔬 Sciences" },
+
+  // Histoire
+  { q:"Qui a peint la Joconde ?", opts:["Raphaël","Michel-Ange","Léonard de Vinci","Botticelli"], ans:2, cat:"📜 Histoire" },
+  { q:"En quelle année le mur de Berlin est-il tombé ?", opts:["1987","1988","1989","1990"], ans:2, cat:"📜 Histoire" },
+  { q:"Quel empire a été fondé par Gengis Khan ?", opts:["Empire Ottoman","Empire Mongol","Empire Romain","Empire Perse"], ans:1, cat:"📜 Histoire" },
+  { q:"Qui a écrit 'De la démocratie en Amérique' ?", opts:["Tocqueville","Montesquieu","Rousseau","Voltaire"], ans:0, cat:"📜 Histoire" },
+  { q:"Quelle révolution a commencé en 1789 ?", opts:["Américaine","Française","Russe","Industrielle"], ans:1, cat:"📜 Histoire" },
+  { q:"Quel pharaon a construit la Grande Pyramide ?", opts:["Ramsès II","Tutankhamon","Khéops","Akhenaton"], ans:2, cat:"📜 Histoire" },
+  { q:"En quelle année l'URSS s'est-elle effondrée ?", opts:["1989","1990","1991","1992"], ans:2, cat:"📜 Histoire" },
+  { q:"Qui a inventé l'imprimerie ?", opts:["Gutenberg","Caxton","Einstein","Da Vinci"], ans:0, cat:"📜 Histoire" },
+
+  // Économie
+  { q:"Quelle est la monnaie du Japon ?", opts:["Won","Yuan","Yen","Ringgit"], ans:2, cat:"💰 Économie" },
+  { q:"Quel indice boursier américain est le plus connu ?", opts:["FTSE","DAX","Dow Jones","Nikkei"], ans:2, cat:"💰 Économie" },
+  { q:"Quel pays a la plus grande économie d'Europe ?", opts:["Royaume-Uni","France","Allemagne","Italie"], ans:2, cat:"💰 Économie" },
+  { q:"Qu'est-ce que le PIB ?", opts:["Produit Intérieur Brut","Prix International Brut","Population Indice Brut","Profit Industriel Brut"], ans:0, cat:"💰 Économie" },
+  { q:"Quelle banque centrale supervise l'euro ?", opts:["Fed","Banque d'Angleterre","BCE","Banque du Japon"], ans:2, cat:"💰 Économie" },
+  { q:"Quel pays exporte le plus de pétrole ?", opts:["Arabie Saoudite","Russie","États-Unis","Canada"], ans:2, cat:"💰 Économie" },
+  { q:"Qu'est-ce que l'inflation ?", opts:["Baisse des prix","Hausse des prix","Stabilité des prix","Fluctuation des prix"], ans:1, cat:"💰 Économie" },
+  { q:"Quel est le siège de l'ONU ?", opts:["Genève","Bruxelles","New York","La Haye"], ans:2, cat:"💰 Économie" },
+
+  // Technologie
+  { q:"Qui a fondé Apple ?", opts:["Bill Gates","Steve Jobs","Mark Zuckerberg","Jeff Bezos"], ans:1, cat:"💻 Tech" },
+  { q:"Quel langage est utilisé pour le développement web ?", opts:["Python","Java","JavaScript","C++"], ans:2, cat:"💻 Tech" },
+  { q:"Qu'est-ce que l'IA ?", opts:["Intelligence Artificielle","Information Automatisée","Interface Avancée","Internet Actif"], ans:0, cat:"💻 Tech" },
+  { q:"Qui a fondé Tesla ?", opts:["Elon Musk","Jeff Bezos","Bill Gates","Larry Page"], ans:0, cat:"💻 Tech" },
+  { q:"Quel est le système d'exploitation le plus utilisé ?", opts:["macOS","Linux","Windows","Android"], ans:2, cat:"💻 Tech" },
+  { q:"Qu'est-ce que le cloud computing ?", opts:["Stockage local","Stockage en ligne","Traitement offline","Réseau privé"], ans:1, cat:"💻 Tech" },
+  { q:"Qui a fondé Amazon ?", opts:["Elon Musk","Jeff Bezos","Bill Gates","Sergey Brin"], ans:1, cat:"💻 Tech" },
+  { q:"Qu'est-ce que le 5G ?", opts:["5ème génération de réseau mobile","5 gigaoctets","5 fréquences","5 satellites"], ans:0, cat:"💻 Tech" },
+
+  // Culture et Arts
+  { q:"Qui a composé 'La Neuvième Symphonie' ?", opts:["Mozart","Bach","Beethoven","Vivaldi"], ans:2, cat:"🎨 Culture" },
+  { q:"Quel tableau représente des tournesols ?", opts:["La Nuit étoilée","Les Tournesols","Les Iris","La Persistance de la mémoire"], ans:1, cat:"🎨 Culture" },
+  { q:"Qui a écrit '1984' ?", opts:["Aldous Huxley","George Orwell","Ray Bradbury","H.G. Wells"], ans:1, cat:"🎨 Culture" },
+  { q:"Quel sculpteur a créé 'David' ?", opts:["Donatello","Michel-Ange","Raphaël","Bernini"], ans:1, cat:"🎨 Culture" },
+  { q:"Quelle langue a le plus de mots ?", opts:["Anglais","Français","Espagnol","Arabe"], ans:0, cat:"🎨 Culture" },
+  { q:"Qui a peint 'Les Demoiselles d'Avignon' ?", opts:["Matisse","Picasso","Monet","Renoir"], ans:1, cat:"🎨 Culture" },
+  { q:"Quel auteur a écrit 'L'Étranger' ?", opts:["Sartre","Camus","Proust","Hugo"], ans:1, cat:"🎨 Culture" },
+  { q:"Quelle ville est la capitale de la mode ?", opts:["Londres","New York","Paris","Milan"], ans:2, cat:"🎨 Culture" },
+
+  // Sport
+  { q:"Quel pays a remporté le plus de Coupes du Monde ?", opts:["Allemagne","Brésil","Italie","Argentine"], ans:1, cat:"⚽ Sport" },
+  { q:"Quel tennisman a le plus de titres du Grand Chelem ?", opts:["Federer","Nadal","Djokovic","Sampras"], ans:2, cat:"⚽ Sport" },
+  { q:"Quelle équipe a remporté le plus de NBA ?", opts:["Lakers","Celtics","Bulls","Warriors"], ans:1, cat:"⚽ Sport" },
+  { q:"Quel cycliste a le plus de Tours de France ?", opts:["Merckx","Indurain","Armstrong","Hinault"], ans:0, cat:"⚽ Sport" },
+  { q:"Quel pays a remporté le plus de médailles olympiques ?", opts:["Chine","Russie","États-Unis","Royaume-Uni"], ans:2, cat:"⚽ Sport" },
+  { q:"Quel golfeur a le plus de majors ?", opts:["Tiger Woods","Jack Nicklaus","Arnold Palmer","Gary Player"], ans:1, cat:"⚽ Sport" },
+  { q:"Quelle ville a accueilli les premiers JO modernes ?", opts:["Paris","Londres","Athènes","Rome"], ans:2, cat:"⚽ Sport" },
+  { q:"Quel sport est originaire du Japon ?", opts:["Judo","Karaté","Sumo","Les trois"], ans:3, cat:"⚽ Sport" },
+
+  // Nature et Environnement
+  { q:"Quel est l'animal le plus grand du monde ?", opts:["Éléphant","Baleine bleue","Girafe","Hippopotame"], ans:1, cat:"🌿 Nature" },
+  { q:"Quel est le plus grand arbre du monde ?", opts:["Séquoia","Chêne","Épicéa","Baobab"], ans:0, cat:"🌿 Nature" },
+  { q:"Quel oiseau a la plus grande envergure ?", opts:["Aigle","Albatros","Vautour","Autruche"], ans:1, cat:"🌿 Nature" },
+  { q:"Quel est le plus grand récif corallien ?", opts:["Belize","Grande Barrière de Corail","Maldives","Philippines"], ans:1, cat:"🌿 Nature" },
+  { q:"Quel animal vit le plus longtemps ?", opts:["Tortue","Baleine","Éléphant","Perroquet"], ans:0, cat:"🌿 Nature" },
+  { q:"Quelle plante produit le café ?", opts:["Cacao","Caféier","Théier","Canne à sucre"], ans:1, cat:"🌿 Nature" },
+  { q:"Quel est le plus grand désert chaud ?", opts:["Sahara","Arabique","Gobi","Kalahari"], ans:0, cat:"🌿 Nature" },
+  { q:"Quel animal peut régénérer ses membres ?", opts:["Serpent","Lézard","Étoile de mer","Crabe"], ans:2, cat:"🌿 Nature" },
+
+  // Gastronomie
+  { q:"De quel pays vient le sushi ?", opts:["Chine","Corée","Japon","Thaïlande"], ans:2, cat:"�️ Gastronomie" },
+  { q:"Quel pays est le plus grand producteur de vin ?", opts:["France","Italie","Espagne","États-Unis"], ans:1, cat:"�️ Gastronomie" },
+  { q:"Quelle épice est la plus chère au monde ?", opts:["Vanille","Safran","Cardamome","Cannelle"], ans:1, cat:"�️ Gastronomie" },
+  { q:"De quel pays vient le paella ?", opts:["Portugal","Italie","Espagne","France"], ans:2, cat:"🍽️ Gastronomie" },
+  { q:"Quel pays a inventé les pâtes ?", opts:["Italie","Chine","Grèce","Égypte"], ans:1, cat:"�️ Gastronomie" },
+  { q:"Quelle boisson est la plus consommée au monde ?", opts:["Thé","Café","Eau","Jus"], ans:2, cat:"🍽️ Gastronomie" },
+  { q:"De quel pays vient le croissant ?", opts:["Allemagne","Autriche","France","Suisse"], ans:1, cat:"�️ Gastronomie" },
+  { q:"Quel fruit est le plus exporté ?", opts:["Pomme","Banane","Orange","Raisin"], ans:1, cat:"�️ Gastronomie" },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const QUESTIONS_PER_GAME = 20;
+const TIME_PER_QUESTION = 15; // secondes
+const POINTS_PER_CORRECT = 5;
+
+let currentPlayer = null;
+let gameQuestions = [];
+let currentQIndex = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let timerInterval = null;
+let timeLeft = TIME_PER_QUESTION;
+let answered = false;
+
+// ============================================================
+// FIREBASE HELPERS
+// ============================================================
+function getPlayersRef() {
+  return ref(db, 'players');
+}
+
+function getGameStateRef() {
+  return ref(db, 'gameState');
+}
+
+function getPlayers(callback) {
+  onValue(getPlayersRef(), (snapshot) => {
+    const data = snapshot.val();
+    callback(data ? Object.values(data) : []);
+  });
+}
+
+function savePlayer(player) {
+  return set(ref(db, 'players/' + player.id), player);
+}
+
+function getGameState(callback) {
+  onValue(getGameStateRef(), (snapshot) => {
+    const data = snapshot.val();
+    callback(data || { status: 'waiting' });
+  });
+}
+
+function setGameState(state) {
+  return set(getGameStateRef(), state);
+}
+
+// ============================================================
+// REGISTER
+// ============================================================
+function registerPlayer() {
+  console.log('registerPlayer appelé');
+  const nameInput = document.getElementById('player-name');
+  const name = nameInput.value.trim();
+  const err = document.getElementById('name-error');
+
+  console.log('Nom:', name);
+
+  if (name.length < 2) {
+    err.style.display = 'block';
+    nameInput.focus();
+    return;
+  }
+  err.style.display = 'none';
+
+  console.log('Vérification des joueurs existants...');
+  // Check if player already exists
+  get(getPlayersRef()).then((snapshot) => {
+    console.log('Snapshot reçu:', snapshot.val());
+    const data = snapshot.val();
+    const players = data ? Object.values(data) : [];
+    const existing = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+
+    console.log('Joueurs existants:', players);
+    console.log('Joueur existant:', existing);
+
+    if (existing) {
+      currentPlayer = existing;
+    } else {
+      currentPlayer = {
+        id: Date.now(),
+        name: name,
+        score: 0,
+        finishedAt: null,
+        correctCount: 0,
+        wrongCount: 0,
+        registeredAt: new Date().toISOString()
+      };
+      console.log('Sauvegarde du nouveau joueur:', currentPlayer);
+      savePlayer(currentPlayer);
+    }
+
+    showScreen('screen-waiting');
+    document.getElementById('waiting-name-display').textContent = name;
+    pollGameState();
+  }).catch(error => {
+    console.error('Erreur Firebase:', error);
+    alert('Erreur de connexion à Firebase: ' + error.message);
+  });
+}
+
+// ============================================================
+// WAITING / LOBBY
+// ============================================================
+let gameStateUnsubscribe = null;
+let playersUnsubscribe = null;
+
+function pollGameState() {
+  // Listen to players count in real-time
+  playersUnsubscribe = onValue(getPlayersRef(), (snapshot) => {
+    const data = snapshot.val();
+    const players = data ? Object.values(data) : [];
+    document.getElementById('lobby-count').textContent = players.length;
+  });
+
+  // Listen to game state in real-time
+  gameStateUnsubscribe = onValue(getGameStateRef(), (snapshot) => {
+    const gs = snapshot.val();
+    if (gs && (gs.status === 'started' || gs.status === 'running')) {
+      if (gameStateUnsubscribe) gameStateUnsubscribe();
+      if (playersUnsubscribe) playersUnsubscribe();
+      document.getElementById('game-ready-msg').style.display = 'block';
+    }
+  });
+}
+
+// ============================================================
+// START QUIZ
+// ============================================================
+function startQuiz() {
+  // Shuffle and pick questions
+  const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5);
+  gameQuestions = shuffled.slice(0, QUESTIONS_PER_GAME);
+  currentQIndex = 0;
+  score = 0;
+  correctCount = 0;
+  wrongCount = 0;
+
+  document.getElementById('q-total').textContent = QUESTIONS_PER_GAME;
+  showScreen('screen-quiz');
+  showQuestion();
+}
+
+// ============================================================
+// QUIZ LOGIC
+// ============================================================
+function showQuestion() {
+  if (currentQIndex >= gameQuestions.length) {
+    endGame();
+    return;
+  }
+
+  const q = gameQuestions[currentQIndex];
+  answered = false;
+
+  document.getElementById('q-current').textContent = currentQIndex + 1;
+  document.getElementById('live-score').textContent = score;
+  document.getElementById('q-category').textContent = q.cat;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('time-up-banner').className = 'time-up-banner';
+
+  // Shuffle options with tracking of correct answer
+  const shuffledOptions = q.opts.map((opt, originalIndex) => ({
+    text: opt,
+    originalIndex: originalIndex
+  })).sort(() => Math.random() - 0.5);
+
+  // Find new position of correct answer
+  const newCorrectIndex = shuffledOptions.findIndex(opt => opt.originalIndex === q.ans);
+
+  // Store the shuffled question with new correct index
+  gameQuestions[currentQIndex] = {
+    ...q,
+    shuffledOpts: shuffledOptions.map(o => o.text),
+    shuffledAns: newCorrectIndex
+  };
+
+  const grid = document.getElementById('options-grid');
+  const letters = ['A','B','C','D'];
+  grid.innerHTML = '';
+  shuffledOptions.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt.text}`;
+    btn.onclick = () => selectAnswer(i, btn);
+    grid.appendChild(btn);
+  });
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIME_PER_QUESTION;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const pct = (timeLeft / TIME_PER_QUESTION) * 100;
+  const bar = document.getElementById('timer-bar');
+  bar.style.width = pct + '%';
+  if (pct < 35) bar.className = 'timer-bar danger';
+  else bar.className = 'timer-bar';
+  document.getElementById('timer-display').textContent = timeLeft;
+}
+
+function selectAnswer(idx, btn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const q = gameQuestions[currentQIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const fb = document.getElementById('feedback');
+  const correctIndex = q.shuffledAns !== undefined ? q.shuffledAns : q.ans;
+  const options = q.shuffledOpts || q.opts;
+
+  if (idx === correctIndex) {
+    btn.classList.add('correct');
+    score += POINTS_PER_CORRECT;
+    correctCount++;
+    fb.textContent = '✅ Bonne réponse ! +' + POINTS_PER_CORRECT + ' points';
+    fb.className = 'feedback correct-fb show';
+  } else {
+    btn.classList.add('wrong');
+    btns[correctIndex].classList.add('correct');
+    wrongCount++;
+    fb.textContent = '❌ Mauvaise réponse ! La bonne réponse était : ' + options[correctIndex];
+    fb.className = 'feedback wrong-fb show';
+  }
+
+  document.getElementById('live-score').textContent = score;
+
+  setTimeout(() => {
+    currentQIndex++;
+    showQuestion();
+  }, 1800);
+}
+
+function timeUp() {
+  answered = true;
+  const q = gameQuestions[currentQIndex];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  const correctIndex = q.shuffledAns !== undefined ? q.shuffledAns : q.ans;
+  btns[correctIndex].classList.add('correct');
+  wrongCount++;
+  document.getElementById('time-up-banner').className = 'time-up-banner show';
+
+  setTimeout(() => {
+    currentQIndex++;
+    showQuestion();
+  }, 1800);
+}
+
+// ============================================================
+// END GAME
+// ============================================================
+function endGame() {
+  clearInterval(timerInterval);
+
+  // Save to Firebase
+  currentPlayer.score = score;
+  currentPlayer.correctCount = correctCount;
+  currentPlayer.wrongCount = wrongCount;
+  currentPlayer.finishedAt = new Date().toISOString();
+  savePlayer(currentPlayer);
+
+  // Get all players for leaderboard
+  get(getPlayersRef()).then((snapshot) => {
+    const data = snapshot.val();
+    const players = data ? Object.values(data) : [];
+    renderFinalScreen(players);
+  });
+}
+
+function renderFinalScreen(players) {
+
+  // Trophy
+  const pct = Math.round((correctCount / QUESTIONS_PER_GAME) * 100);
+  const trophy = document.getElementById('final-trophy');
+  if (pct >= 80) trophy.textContent = '🏆';
+  else if (pct >= 60) trophy.textContent = '🥈';
+  else if (pct >= 40) trophy.textContent = '🥉';
+  else trophy.textContent = '💪';
+
+  document.getElementById('final-score-display').textContent = score;
+  document.getElementById('stat-correct').textContent = correctCount;
+  document.getElementById('stat-wrong').textContent = wrongCount;
+  document.getElementById('stat-pct').textContent = pct + '%';
+
+  // Leaderboard
+  const sorted = [...players].filter(p => p.finishedAt).sort((a,b) => b.score - a.score);
+  const lbEl = document.getElementById('leaderboard-list');
+  lbEl.innerHTML = '';
+  const rankClass = ['gold','silver','bronze'];
+  sorted.slice(0,10).forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'lb-row' + (p.id === currentPlayer.id ? ' me' : '');
+    row.innerHTML = `
+      <div class="lb-rank ${rankClass[i]||''}">${i+1}</div>
+      <div class="lb-name">${p.name} ${p.id === currentPlayer.id ? '← toi' : ''}</div>
+      <div class="lb-pts">${p.score} pts</div>
+    `;
+    lbEl.appendChild(row);
+  });
+
+  showScreen('screen-final');
+}
+
+// ============================================================
+// PLAY AGAIN
+// ============================================================
+function playAgain() {
+  showScreen('screen-register');
+  document.getElementById('player-name').value = '';
+}
+
+// ============================================================
+// SCREEN HELPER
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ENTER key on name input
+document.getElementById('player-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') registerPlayer();
+});
+
+// Expose functions to window for onclick handlers
+window.registerPlayer = registerPlayer;
+window.startQuiz = startQuiz;
+window.selectAnswer = selectAnswer;
+window.playAgain = playAgain;
+</script>
+</body>
+</html>
