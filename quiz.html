@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -460,75 +461,99 @@ const db = getDatabase(app);
 console.log('Firebase initialisé', app);
 
 // ============================================================
-// QUESTIONS DATABASE — Multiplications
+// QUESTIONS DATABASE — 60 questions sur le Bénin
 // ============================================================
 const QUESTIONS = [
-  { q:"Combien font 2 × 3 ?", opts:["5","6","7","8"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 5 ?", opts:["18","20","22","25"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 7 ?", opts:["40","42","44","48"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 9 ?", opts:["70","72","74","76"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 4 ?", opts:["10","11","12","13"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 6 ?", opts:["28","30","32","35"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 8 ?", opts:["54","56","58","60"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 10 ?", opts:["88","90","92","95"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 2 × 8 ?", opts:["14","15","16","18"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 9 ?", opts:["25","26","27","28"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 7 ?", opts:["26","27","28","30"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 8 ?", opts:["38","40","42","45"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 6 ?", opts:["34","35","36","38"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 7 ?", opts:["47","48","49","51"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 8 ?", opts:["62","64","66","68"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 9 ?", opts:["79","80","81","83"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 10 × 10 ?", opts:["98","99","100","102"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 5 ?", opts:["13","14","15","16"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 6 ?", opts:["22","23","24","26"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 7 ?", opts:["33","34","35","37"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 8 ?", opts:["46","47","48","50"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 9 ?", opts:["61","62","63","65"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 5 ?", opts:["38","40","42","44"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 6 ?", opts:["52","53","54","56"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 10 × 7 ?", opts:["68","69","70","72"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 2 × 12 ?", opts:["22","24","26","28"], ans:1, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 11 ?", opts:["31","32","33","34"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 12 ?", opts:["46","47","48","50"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 11 ?", opts:["53","54","55","57"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 12 ?", opts:["70","71","72","74"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 11 ?", opts:["75","76","77","79"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 12 ?", opts:["94","95","96","98"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 11 ?", opts:["97","98","99","101"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 10 × 12 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 11 × 11 ?", opts:["119","120","121","123"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 12 × 12 ?", opts:["142","143","144","146"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 2 × 15 ?", opts:["28","29","30","32"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 14 ?", opts:["40","41","42","44"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 13 ?", opts:["50","51","52","54"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 15 ?", opts:["73","74","75","77"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 14 ?", opts:["82","83","84","86"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 13 ?", opts:["89","90","91","93"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 15 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 14 ?", opts:["124","125","126","128"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 10 × 13 ?", opts:["128","129","130","132"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 11 × 12 ?", opts:["130","131","132","134"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 12 × 11 ?", opts:["130","131","132","134"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 13 × 10 ?", opts:["128","129","130","132"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 14 × 9 ?", opts:["124","125","126","128"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 15 × 8 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 2 × 20 ?", opts:["38","39","40","42"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 3 × 19 ?", opts:["55","56","57","59"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 4 × 18 ?", opts:["70","71","72","74"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 5 × 17 ?", opts:["83","84","85","87"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 6 × 16 ?", opts:["94","95","96","98"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 7 × 15 ?", opts:["103","104","105","107"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 8 × 14 ?", opts:["110","111","112","114"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 9 × 13 ?", opts:["115","116","117","119"], ans:2, cat:"🔢 Mathématiques" },
-  { q:"Combien font 10 × 12 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
+  // Géographie du Bénin
+  { q:"Quelle est la capitale politique du Bénin ?", opts:["Cotonou","Porto-Novo","Parakou","Ouidah"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la capitale économique du Bénin ?", opts:["Porto-Novo","Cotonou","Abomey","Bohicon"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Combien de départements compte le Bénin ?", opts:["10","11","12","13"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel pays borde le Bénin à l'ouest ?", opts:["Nigeria","Togo","Burkina Faso","Niger"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel pays borde le Bénin à l'est ?", opts:["Togo","Nigeria","Ghana","Côte d'Ivoire"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel pays borde le Bénin au nord ?", opts:["Nigeria","Togo","Niger","Burkina Faso"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel océan borde le sud du Bénin ?", opts:["Océan Atlantique","Océan Indien","Océan Pacifique","Méditerranée"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la plus grande ville du Bénin ?", opts:["Porto-Novo","Cotonou","Parakou","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel fleuve forme la frontière avec le Nigeria ?", opts:["Ouémé","Mono","Niger","Couffo"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la superficie approximative du Bénin ?", opts:["110 000 km²","115 000 km²","120 000 km²","125 000 km²"], ans:1, cat:"🇧🇯 Bénin" },
+
+  // Histoire du Bénin
+  { q:"Quel était l'ancien nom du Bénin ?", opts:["Dahomey","Côte d'Or","Haute-Volta","Congo"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"En quelle année le Bénin a-t-il obtenu son indépendance ?", opts:["1958","1959","1960","1961"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"De quel pays le Bénin était-il colonie ?", opts:["France","Angleterre","Portugal","Allemagne"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quel empire a régné sur le sud du Bénin ?", opts:["Empire du Mali","Empire du Dahomey","Empire Songhaï","Empire Ashanti"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville était la capitale du royaume du Dahomey ?", opts:["Porto-Novo","Abomey","Ouidah","Cotonou"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"En quelle année le Bénin a-t-il changé de nom (Dahomey → Bénin) ?", opts:["1972","1973","1974","1975"], ans:3, cat:"🇧🇯 Bénin" },
+  { q:"Qui était le premier président du Bénin indépendant ?", opts:["Mathieu Kérékou","Hubert Maga","Sourou-Migan Apithy","Emile Derlin Zinsou"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"En quelle année a eu lieu la Conférence Nationale du Bénin ?", opts:["1988","1989","1990","1991"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel roi du Dahomey a résisté à la colonisation ?", opts:["Béhanzin","Guezo","Agadja","Tegbessou"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Où se trouve la 'Porte du Non-Retour' ?", opts:["Cotonou","Ouidah","Grand-Popo","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
+
+  // Culture et Traditions
+  { q:"Quel est le peuple traditionnel du sud du Bénin ?", opts:["Fon","Yoruba","Bariba","Dendi"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quel est le peuple traditionnel du nord du Bénin ?", opts:["Fon","Yoruba","Bariba","Dendi"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la langue officielle du Bénin ?", opts:["Anglais","Français","Portugais","Espagnol"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Combien de langues nationales sont parlées au Bénin ?", opts:["environ 40","environ 50","environ 60","environ 70"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel est le dieu créateur chez les Fon ?", opts:["Mawu","Legba","Sakpata","Hevioso"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle fête traditionnelle célèbre les ancêtres au Bénin ?", opts:["Fête de l'Indépendance","Fête Vodun","Fête du Tabaski","Fête de Pâques"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel tissu traditionnel est célèbre au Bénin ?", opts:["Kente","Bogolan","Pagne","Wax"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quelle danse traditionnelle est originaire du Bénin ?", opts:["Coupe-décalé","Makossa","Zinli","Azonto"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel instrument de musique est typique du Bénin ?", opts:["Kora","Djembe","Balafon","Sitar"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle religion est très pratiquée au sud du Bénin ?", opts:["Islam","Christianisme","Vodun","Bouddhisme"], ans:2, cat:"🇧🇯 Bénin" },
+
+  // Politique et Institutions
+  { q:"Quel est le régime politique du Bénin ?", opts:["Monarchie","République présidentielle","République parlementaire","Dictature"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Combien de mandats présidentiels peut-on faire au Bénin ?", opts:["1","2","3","Illimité"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la durée d'un mandat présidentiel au Bénin ?", opts:["4 ans","5 ans","6 ans","7 ans"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Qui est l'actuel président du Bénin (2024) ?", opts:["Thomas Boni Yayi","Patrice Talon","Romual Wadagni","Nicéphore Soglo"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"En quelle année Patrice Talon a-t-il été élu ?", opts:["2014","2015","2016","2017"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel ancien président a introduit le multipartisme au Bénin ?", opts:["Mathieu Kérékou","Nicéphore Soglo","Yayi Boni","Hubert Maga"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Où siège l'Assemblée Nationale du Bénin ?", opts:["Cotonou","Porto-Novo","Parakou","Abomey"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Combien de députés compte l'Assemblée Nationale du Bénin ?", opts:["77","83","109","113"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la monnaie du Bénin ?", opts:["Naira","Cedi","Franc CFA","Dollar"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"À quelle zone monétaire appartient le Bénin ?", opts:["CEMAC","UEMOA","ECOWAS","SADC"], ans:1, cat:"🇧🇯 Bénin" },
+
+  // Économie
+  { q:"Quelle est la principale culture d'exportation du Bénin ?", opts:["Café","Cacao","Coton","Huile de palme"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel est le principal port du Bénin ?", opts:["Port de Cotonou","Port de Porto-Novo","Port de Grand-Popo","Port de Ouidah"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ressource naturelle est exploitée au Bénin ?", opts:["Pétrole","Or","Diamant","Calcaire"], ans:3, cat:"🇧🇯 Bénin" },
+  { q:"Quel secteur emploie le plus de personnes au Bénin ?", opts:["Industrie","Services","Agriculture","Tourisme"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel pays est le principal partenaire commercial du Bénin ?", opts:["France","Nigeria","Chine","États-Unis"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville est connue pour son marché au Bénin ?", opts:["Dantokpa","Akpakpa","Ganhi","Fidjrossè"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quel produit artisanal est célèbre à Ouidah ?", opts:["Sculpture sur bois","Tissage","Poterie","Bijoux"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle est la principale source d'énergie au Bénin ?", opts:["Charbon","Gaz","Hydroélectricité","Solaire"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel aéroport international dessert le Bénin ?", opts:["Aéroport de Parakou","Aéroport de Cadjehoun","Aéroport de Natitingou","Aéroport de Savé"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville est un centre commercial important au Bénin ?", opts:["Abomey","Bohicon","Malanville","Savalou"], ans:1, cat:"🇧🇯 Bénin" },
+
+  // Tourisme et Sites
+  { q:"Quel est le site touristique le plus célèbre du Bénin ?", opts:["Musée d'Abomey","Plage de Grand-Popo","Parc de la Pendjari","Lac Nokoué"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Où se trouve le Parc National de la Pendjari ?", opts:["Sud du Bénin","Centre du Bénin","Nord du Bénin","Est du Bénin"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quel animal peut-on observer dans la Pendjari ?", opts:["Lion","Éléphant","Hippopotame","Les trois"], ans:3, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville est connue pour ses Tata Somba ?", opts:["Natitingou","Parakou","Djougou","Kandi"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Qu'est-ce que les Tata Somba ?", opts:["Châteaux","Maisons fortifiées","Temples","Ponts"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel lac est situé près de Cotonou ?", opts:["Lac Ahémé","Lac Nokoué","Lac Toho","Lac Azili"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville est connue pour ses plages ?", opts:["Grand-Popo","Parakou","Abomey","Savalou"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Où se trouve le Musée Historique d'Abomey ?", opts:["Abomey","Porto-Novo","Ouidah","Cotonou"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quel site commémore l'esclavage ?", opts:["Musée d'Abomey","Porte du Non-Retour","Parc de la Pendjari","Lac Nokoué"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle ville est connue pour ses féticheurs ?", opts:["Cotonou","Ouidah","Porto-Novo","Parakou"], ans:1, cat:"🇧🇯 Bénin" },
+
+  // Gastronomie
+  { q:"Quel plat est le plus populaire au Bénin ?", opts:["Riz gras","Foufou","Amiwo","Pâte d'arachide"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"De quoi est composé l'Amiwo ?", opts:["Riz et haricots","Maïs et sauce rouge","Manioc et poisson","Millet et lait"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quelle boisson traditionnelle est consommée au Bénin ?", opts:["Bissap","Tchoukoutou","Jus d'ananas","Sodabi"], ans:3, cat:"🇧🇯 Bénin" },
+  { q:"De quoi est fait le Sodabi ?", opts:["Vin de palme","Jus de canne à sucre","Eau de vie de maïs","Bière de mil"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quel fruit est très consommé au Bénin ?", opts:["Mangue","Ananas","Papaye","Banane"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle épice est utilisée dans la cuisine béninoise ?", opts:["Curcuma","Piment","Gingembre","Cannelle"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel plat est préparé avec du gari ?", opts:["Gari et sauce","Riz et gari","Foufou et gari","Pâte et gari"], ans:0, cat:"🇧🇯 Bénin" },
+  { q:"Quelle huile est utilisée dans la cuisine béninoise ?", opts:["Huile d'olive","Huile de palme","Huile de tournesol","Huile de coco"], ans:1, cat:"🇧🇯 Bénin" },
+  { q:"Quel poisson est populaire au Bénin ?", opts:["Thon","Carpe","Capitaine","Sardine"], ans:2, cat:"🇧🇯 Bénin" },
+  { q:"Quelle pâtisserie est typique du Bénin ?", opts:["Croissant","Gâteau","Akassa","Chin chin"], ans:3, cat:"🇧🇯 Bénin" },
 ];
 
 // ============================================================
 // STATE
 // ============================================================
-const QUESTIONS_PER_GAME = 15;
-const TIME_PER_QUESTION = 12; // secondes
+const QUESTIONS_PER_GAME = 30;
+const TIME_PER_QUESTION = 10; // secondes
 const POINTS_PER_CORRECT = 5;
 
 let currentPlayer = null;
