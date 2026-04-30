@@ -460,86 +460,68 @@ const db = getDatabase(app);
 console.log('Firebase initialisé', app);
 
 // ============================================================
-// QUESTIONS DATABASE — 60 questions
+// QUESTIONS DATABASE — Multiplications
 // ============================================================
 const QUESTIONS = [
-  // Géographie
-  { q:"Quelle est la capitale du Bénin ?", opts:["Porto-Novo","Cotonou","Parakou","Abomey"], ans:0, cat:"🌍 Géographie" },
-  { q:"Quel est le plus grand pays du monde en superficie ?", opts:["Canada","Chine","USA","Russie"], ans:3, cat:"🌍 Géographie" },
-  { q:"Sur quel continent se trouve le Nigeria ?", opts:["Asie","Amérique","Afrique","Europe"], ans:2, cat:"🌍 Géographie" },
-  { q:"Quelle mer borde le nord de l'Afrique ?", opts:["Mer Rouge","Océan Indien","Mer Méditerranée","Mer Noire"], ans:2, cat:"🌍 Géographie" },
-  { q:"Quel fleuve traverse l'Égypte ?", opts:["Congo","Niger","Nil","Zambèze"], ans:2, cat:"🌍 Géographie" },
-  { q:"Quelle est la capitale du Sénégal ?", opts:["Abidjan","Dakar","Lomé","Bamako"], ans:1, cat:"🌍 Géographie" },
-  { q:"Quel est le plus haut sommet du monde ?", opts:["Mont Blanc","Kilimandjaro","Everest","Aconcagua"], ans:2, cat:"🌍 Géographie" },
-  { q:"Quelle est la capitale du Brésil ?", opts:["Rio de Janeiro","São Paulo","Brasilia","Salvador"], ans:2, cat:"🌍 Géographie" },
-
-  // Sciences
-  { q:"Quelle est la formule chimique de l'eau ?", opts:["CO2","H2O","O2","NaCl"], ans:1, cat:"🔬 Sciences" },
-  { q:"Combien de planètes compte notre système solaire ?", opts:["7","8","9","10"], ans:1, cat:"🔬 Sciences" },
-  { q:"Quelle planète est surnommée la planète rouge ?", opts:["Vénus","Jupiter","Mars","Saturne"], ans:2, cat:"🔬 Sciences" },
-  { q:"Quel organe du corps humain filtre le sang ?", opts:["Poumons","Foie","Reins","Estomac"], ans:2, cat:"🔬 Sciences" },
-  { q:"Quelle est la vitesse de la lumière (approx.) ?", opts:["100 000 km/s","300 000 km/s","150 000 km/s","500 000 km/s"], ans:1, cat:"🔬 Sciences" },
-  { q:"Combien de chromosomes possède l'être humain ?", opts:["23","44","46","48"], ans:2, cat:"🔬 Sciences" },
-  { q:"Quel gaz représente environ 78% de l'atmosphère terrestre ?", opts:["Oxygène","Azote","CO2","Argon"], ans:1, cat:"🔬 Sciences" },
-  { q:"Qui a découvert la pénicilline ?", opts:["Pasteur","Fleming","Curie","Darwin"], ans:1, cat:"🔬 Sciences" },
-
-  // Histoire
-  { q:"En quelle année a eu lieu la Révolution française ?", opts:["1776","1789","1799","1815"], ans:1, cat:"📜 Histoire" },
-  { q:"Qui était le premier président des États-Unis ?", opts:["Lincoln","Jefferson","Washington","Adams"], ans:2, cat:"📜 Histoire" },
-  { q:"Quel empire avait pour capitale Constantinople ?", opts:["Romain","Ottoman","Byzantin","Perse"], ans:2, cat:"📜 Histoire" },
-  { q:"En quelle année l'Afrique du Sud a aboli l'apartheid ?", opts:["1984","1990","1994","1998"], ans:2, cat:"📜 Histoire" },
-  { q:"Qui a écrit 'Les Misérables' ?", opts:["Balzac","Flaubert","Victor Hugo","Zola"], ans:2, cat:"📜 Histoire" },
-  { q:"Quelle civilisation a construit les pyramides de Gizeh ?", opts:["Romaine","Grecque","Égyptienne","Mésopotamienne"], ans:2, cat:"📜 Histoire" },
-  { q:"En quelle année la Seconde Guerre mondiale a-t-elle pris fin ?", opts:["1943","1944","1945","1946"], ans:2, cat:"📜 Histoire" },
-  { q:"Qui a été le premier homme à marcher sur la Lune ?", opts:["Buzz Aldrin","Yuri Gagarin","Neil Armstrong","John Glenn"], ans:2, cat:"📜 Histoire" },
-
-  // Sport
-  { q:"Combien de joueurs compte une équipe de football ?", opts:["9","10","11","12"], ans:2, cat:"⚽ Sport" },
-  { q:"Dans quel pays ont eu lieu les JO de 2024 ?", opts:["USA","Japon","France","Australie"], ans:2, cat:"⚽ Sport" },
-  { q:"Combien de sets dans un match de tennis au Grand Chelem (hommes) ?", opts:["3","4","5","2"], ans:2, cat:"⚽ Sport" },
-  { q:"Quel pays a remporté la Coupe du Monde 2022 ?", opts:["Brésil","France","Argentine","Allemagne"], ans:2, cat:"⚽ Sport" },
-  { q:"Combien de joueurs dans une équipe de basketball ?", opts:["4","5","6","7"], ans:1, cat:"⚽ Sport" },
-  { q:"Quel sport se joue avec un volant ?", opts:["Tennis","Badminton","Squash","Ping-pong"], ans:1, cat:"⚽ Sport" },
-  { q:"Dans quel sport utilise-t-on un 'smash' ?", opts:["Football","Volleyball","Golf","Rugby"], ans:1, cat:"⚽ Sport" },
-  { q:"Quelle est la distance du marathon ?", opts:["21 km","30 km","42,195 km","50 km"], ans:2, cat:"⚽ Sport" },
-
-  // Culture Générale
-  { q:"Quelle est la couleur du ciel par temps clair ?", opts:["Vert","Bleu","Rouge","Jaune"], ans:1, cat:"🧠 Culture" },
-  { q:"Combien font 15 × 15 ?", opts:["200","215","225","230"], ans:2, cat:"🧠 Culture" },
-  { q:"Quel animal est le symbole de l'Australie ?", opts:["Koala","Kangourou","Crocodile","Dingo"], ans:1, cat:"🧠 Culture" },
-  { q:"Combien de lettres dans l'alphabet français ?", opts:["24","25","26","27"], ans:2, cat:"🧠 Culture" },
-  { q:"Quelle langue est la plus parlée au monde ?", opts:["Anglais","Espagnol","Mandarin","Hindi"], ans:2, cat:"🧠 Culture" },
-  { q:"Quel est le métal le plus précieux ?", opts:["Argent","Or","Platine","Titane"], ans:2, cat:"🧠 Culture" },
-  { q:"Combien y a-t-il de continents ?", opts:["5","6","7","8"], ans:2, cat:"🧠 Culture" },
-  { q:"Quel est le plus grand océan du monde ?", opts:["Atlantique","Indien","Arctique","Pacifique"], ans:3, cat:"🧠 Culture" },
-
-  // Musique
-  { q:"Qui est surnommé 'Le Roi du Pop' ?", opts:["Prince","Elvis","Michael Jackson","Bruno Mars"], ans:2, cat:"🎵 Musique" },
-  { q:"De quel pays vient le groupe 'Maná' ?", opts:["Argentine","Mexique","Espagne","Colombie"], ans:1, cat:"🎵 Musique" },
-  { q:"Combien de cordes a une guitare standard ?", opts:["4","5","6","7"], ans:2, cat:"🎵 Musique" },
-  { q:"Quel instrument joue Beethoven ?", opts:["Violon","Flûte","Piano","Trompette"], ans:2, cat:"🎵 Musique" },
-
-  // Technologie
-  { q:"Qui a fondé Microsoft ?", opts:["Steve Jobs","Elon Musk","Bill Gates","Mark Zuckerberg"], ans:2, cat:"💻 Tech" },
-  { q:"Que signifie 'WWW' ?", opts:["World Wide Web","World Wire Web","Wide World Web","Web World Wire"], ans:0, cat:"💻 Tech" },
-  { q:"Quel pays a inventé le papier ?", opts:["Japon","Inde","Chine","Égypte"], ans:2, cat:"💻 Tech" },
-  { q:"En quelle année a été fondé Facebook ?", opts:["2002","2004","2006","2008"], ans:1, cat:"💻 Tech" },
-
-  // Nature
-  { q:"Quel animal est le plus rapide sur terre ?", opts:["Guépard","Lion","Faucon","Cheval"], ans:0, cat:"🦁 Nature" },
-  { q:"Combien de pattes a une araignée ?", opts:["6","7","8","10"], ans:2, cat:"🦁 Nature" },
-  { q:"Quel est le plus grand mammifère marin ?", opts:["Grand requin blanc","Requin baleine","Baleine bleue","Orque"], ans:2, cat:"🦁 Nature" },
-  { q:"De quoi se nourrit principalement le panda ?", opts:["Poisson","Bambou","Insectes","Fruits"], ans:1, cat:"🦁 Nature" },
-
-  // Gastronomie
-  { q:"De quel pays vient la pizza ?", opts:["France","Espagne","Grèce","Italie"], ans:3, cat:"🍕 Gastronomie" },
-  { q:"Quelle épice donne une couleur jaune au curry ?", opts:["Paprika","Curcuma","Safran","Cannelle"], ans:1, cat:"🍕 Gastronomie" },
-  { q:"Le riz est-il un légume ou une céréale ?", opts:["Légume","Céréale","Fruit","Tubercule"], ans:1, cat:"🍕 Gastronomie" },
-  { q:"De quel pays vient le chocolat originellement ?", opts:["Suisse","Belgique","Mésoamérique (Mayas/Aztèques)","Ghana"], ans:2, cat:"🍕 Gastronomie" },
-
-  // Cinéma
-  { q:"Quel film a récolté le plus d'oscars (11) à deux reprises ?", opts:["Titanic","Le Seigneur des Anneaux","Ben-Hur","Schindler's List"], ans:2, cat:"🎬 Cinéma" },
-  { q:"Dans quelle ville se passe 'Black Panther' ?", opts:["Lagos","Wakanda","Cairo","Johannesburg"], ans:1, cat:"🎬 Cinéma" },
+  { q:"Combien font 2 × 3 ?", opts:["5","6","7","8"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 5 ?", opts:["18","20","22","25"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 7 ?", opts:["40","42","44","48"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 9 ?", opts:["70","72","74","76"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 4 ?", opts:["10","11","12","13"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 6 ?", opts:["28","30","32","35"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 8 ?", opts:["54","56","58","60"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 10 ?", opts:["88","90","92","95"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 2 × 8 ?", opts:["14","15","16","18"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 9 ?", opts:["25","26","27","28"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 7 ?", opts:["26","27","28","30"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 8 ?", opts:["38","40","42","45"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 6 ?", opts:["34","35","36","38"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 7 ?", opts:["47","48","49","51"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 8 ?", opts:["62","64","66","68"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 9 ?", opts:["79","80","81","83"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 10 × 10 ?", opts:["98","99","100","102"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 5 ?", opts:["13","14","15","16"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 6 ?", opts:["22","23","24","26"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 7 ?", opts:["33","34","35","37"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 8 ?", opts:["46","47","48","50"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 9 ?", opts:["61","62","63","65"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 5 ?", opts:["38","40","42","44"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 6 ?", opts:["52","53","54","56"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 10 × 7 ?", opts:["68","69","70","72"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 2 × 12 ?", opts:["22","24","26","28"], ans:1, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 11 ?", opts:["31","32","33","34"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 12 ?", opts:["46","47","48","50"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 11 ?", opts:["53","54","55","57"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 12 ?", opts:["70","71","72","74"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 11 ?", opts:["75","76","77","79"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 12 ?", opts:["94","95","96","98"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 11 ?", opts:["97","98","99","101"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 10 × 12 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 11 × 11 ?", opts:["119","120","121","123"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 12 × 12 ?", opts:["142","143","144","146"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 2 × 15 ?", opts:["28","29","30","32"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 14 ?", opts:["40","41","42","44"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 13 ?", opts:["50","51","52","54"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 15 ?", opts:["73","74","75","77"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 14 ?", opts:["82","83","84","86"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 13 ?", opts:["89","90","91","93"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 15 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 14 ?", opts:["124","125","126","128"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 10 × 13 ?", opts:["128","129","130","132"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 11 × 12 ?", opts:["130","131","132","134"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 12 × 11 ?", opts:["130","131","132","134"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 13 × 10 ?", opts:["128","129","130","132"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 14 × 9 ?", opts:["124","125","126","128"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 15 × 8 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 2 × 20 ?", opts:["38","39","40","42"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 3 × 19 ?", opts:["55","56","57","59"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 4 × 18 ?", opts:["70","71","72","74"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 5 × 17 ?", opts:["83","84","85","87"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 6 × 16 ?", opts:["94","95","96","98"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 7 × 15 ?", opts:["103","104","105","107"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 8 × 14 ?", opts:["110","111","112","114"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 9 × 13 ?", opts:["115","116","117","119"], ans:2, cat:"🔢 Mathématiques" },
+  { q:"Combien font 10 × 12 ?", opts:["118","119","120","122"], ans:2, cat:"🔢 Mathématiques" },
 ];
 
 // ============================================================
